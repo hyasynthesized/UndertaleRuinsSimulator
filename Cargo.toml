@@ -1,0 +1,10 @@
+[package]
+name = "undertale_ruins_analysis"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+itermore = { version = "0.7.1", features = ["array_windows"] }
+itertools = "0.14.0"
+rayon = "1.10.0"
+rayon-progress = "1.0.0"
