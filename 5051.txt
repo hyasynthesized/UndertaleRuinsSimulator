@@ -1,0 +1,12 @@
+["Seed 5051", "Fun value 27", "expected before pellet: 6582", "expected after flowey: 18645", 
+
+
+"0,9,10,30 (2220, 0), taw xzx..z, fearless x..z", 
+"expected before ruins7 enter: 25699", 
+"room_ruins7 first visit step count: 12", 
+"room_ruins7 step count: 29", 
+"room_ruins8 step count: 18", 
+"choose bscotch", 
+"ruins10 step count: 26", 
+"ruins11 second step count: 53", 
+"3rr triple mold"]

@@ -1,4 +1,4 @@
-use std::{collections::HashSet, sync::Arc};
+use std::{collections::HashSet, hash::Hash, sync::Arc};
 
 const RNG_STATE_SIZE: usize = 16;
 
@@ -7,15 +7,25 @@ pub struct RNG {
     random_poly: u32,
     index: usize,
     pub num_calls: usize,
+    pub calls_the_tas_mod_cant_see: usize,
     state: [u32; RNG_STATE_SIZE],
+    pub seed: u32,
 }
 
+impl Hash for RNG {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.random_poly.hash(state);
+        self.index.hash(state);
+        self.state.hash(state);
+    }
+}
 // pub type PrecomputedRNG = RNG;
 
 #[derive(Clone)]
 pub struct PrecomputedRNG {
     values: Arc<Vec<u32>>,
     pub ptr: usize,
+    pub calls_the_tas_mod_cant_see: usize,
 }
 
 impl Eq for PrecomputedRNG {}
@@ -44,6 +54,7 @@ impl PrecomputedRNG {
         Self {
             values: values.into(),
             ptr: 0,
+            calls_the_tas_mod_cant_see: 0,
         }
     }
 
@@ -64,6 +75,8 @@ impl PrecomputedRNG {
             // Call irandom until it lands on a byte that's '1' rather than '0'
             loop {
                 let index = (self.next_u32() % 9) as usize;
+                self.calls_the_tas_mod_cant_see += 1;
+
                 if dir.as_bytes()[index] == 49 {
                     break;
                 }
@@ -108,7 +121,9 @@ impl RNG {
             },
             index: 0,
             num_calls: 0,
+            calls_the_tas_mod_cant_see: 0,
             state: [0; RNG_STATE_SIZE],
+            seed,
         };
 
         // Generate initial state
@@ -154,6 +169,7 @@ impl RNG {
             // Call irandom until it lands on a byte that's '1' rather than '0'
             loop {
                 let index = (self.next_u32() % 9) as usize;
+                self.calls_the_tas_mod_cant_see += 1;
                 if dir.as_bytes()[index] == 49 {
                     break;
                 }
